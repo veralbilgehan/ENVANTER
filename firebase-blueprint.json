@@ -1,0 +1,177 @@
+{
+  "entities": {
+    "UserWorkspace": {
+      "title": "UserWorkspace",
+      "description": "Public profile and company workspace assignment for a user or person.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the owner",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "username": {
+          "type": "string",
+          "description": "Display username",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "fullName": {
+          "type": "string",
+          "description": "Full name of the person",
+          "minLength": 1,
+          "maxLength": 150
+        },
+        "companyName": {
+          "type": "string",
+          "description": "Assigned company or workspace name",
+          "minLength": 1,
+          "maxLength": 250
+        },
+        "role": {
+          "type": "string",
+          "description": "Role in workspace",
+          "enum": ["admin", "officer", "auditor"],
+          "minLength": 1,
+          "maxLength": 30
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last update"
+        }
+      },
+      "required": ["uid", "username", "fullName", "companyName", "role", "createdAt", "updatedAt"]
+    },
+    "InventoryFormRecord": {
+      "title": "InventoryFormRecord",
+      "description": "KVKK 37-point inventory and job description form record belonging to a specific user/company workspace.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique record ID",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerUid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the creator/owner",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerUsername": {
+          "type": "string",
+          "description": "Username or person identifier",
+          "maxLength": 150
+        },
+        "companyName": {
+          "type": "string",
+          "description": "Company or workspace name",
+          "minLength": 1,
+          "maxLength": 250
+        },
+        "title": {
+          "type": "string",
+          "description": "Form title",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "projectCode": {
+          "type": "string",
+          "description": "Project tracking code",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "version": {
+          "type": "string",
+          "description": "Form version string",
+          "minLength": 1,
+          "maxLength": 30
+        },
+        "status": {
+          "type": "string",
+          "description": "Current workflow status of the form",
+          "enum": ["draft", "review", "finalized", "active"],
+          "minLength": 1,
+          "maxLength": 30
+        },
+        "unvan": { "type": "string", "maxLength": 500 },
+        "adres": { "type": "string", "maxLength": 1000 },
+        "vergiNo": { "type": "string", "maxLength": 100 },
+        "vergiDairesi": { "type": "string", "maxLength": 200 },
+        "mersisNo": { "type": "string", "maxLength": 100 },
+        "telefon": { "type": "string", "maxLength": 200 },
+        "eposta": { "type": "string", "maxLength": 300 },
+        "faaliyet": { "type": "string", "maxLength": 2000 },
+        "departmanlar": { "type": "string", "maxLength": 2000 },
+        "selectedPositions": { "type": "array", "description": "Selected organizational hierarchy positions" },
+        "komiteBaskani": { "type": "string", "maxLength": 200 },
+        "komiteUyeleri": { "type": "array", "description": "KVK committee member roles" },
+        "yetkili": { "type": "string", "maxLength": 300 },
+        "veriSorumlusu": { "type": "string", "maxLength": 500 },
+        "irtibat": { "type": "string", "maxLength": 300 },
+        "birimSecilenGorevler": { "type": "object", "description": "Map of unit keys to selected tasks" },
+        "donanim": { "type": "string", "maxLength": 3000 },
+        "yazilim": { "type": "string", "maxLength": 3000 },
+        "guvenlik": { "type": "string", "maxLength": 3000 },
+        "elektronikOlmayan": { "type": "string", "maxLength": 3000 },
+        "bulutSistemleri": { "type": "string", "maxLength": 3000 },
+        "idariTedbirler": { "type": "string", "maxLength": 4000 },
+        "teknikTedbirler": { "type": "string", "maxLength": 4000 },
+        "veriGuvenligi": { "type": "string", "maxLength": 4000 },
+        "kisiselVeriKategorileri": { "type": "string", "maxLength": 3000 },
+        "ozelNitelikliVeriler": { "type": "string", "maxLength": 3000 },
+        "veriToplamaYontemleri": { "type": "string", "maxLength": 3000 },
+        "saklamaAmaclari": { "type": "string", "maxLength": 3000 },
+        "hukukiSebepler": { "type": "string", "maxLength": 3000 },
+        "aliciGruplari": { "type": "string", "maxLength": 3000 },
+        "imhaSebep": { "type": "string", "maxLength": 3000 },
+        "imhaYontem": { "type": "string", "maxLength": 3000 },
+        "saklamaSureleri": { "type": "string", "maxLength": 3000 },
+        "periyodikImhaSuresi": { "type": "string", "maxLength": 500 },
+        "raciTasks": { "type": "array", "description": "List of RACI matrix tasks" },
+        "raciValues": { "type": "object", "description": "Map of task index and role to RACI value" },
+        "infoNote": { "type": "string", "maxLength": 2000 },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last update"
+        }
+      },
+      "required": [
+        "id", "ownerUid", "ownerUsername", "companyName", "title", "projectCode", "version", "status",
+        "unvan", "adres", "vergiNo", "vergiDairesi", "mersisNo", "telefon", "eposta", "faaliyet", "departmanlar",
+        "selectedPositions", "komiteBaskani", "komiteUyeleri", "yetkili", "veriSorumlusu", "irtibat",
+        "birimSecilenGorevler", "donanim", "yazilim", "guvenlik", "elektronikOlmayan", "bulutSistemleri",
+        "idariTedbirler", "teknikTedbirler", "veriGuvenligi", "kisiselVeriKategorileri", "ozelNitelikliVeriler",
+        "veriToplamaYontemleri", "saklamaAmaclari", "hukukiSebepler", "aliciGruplari", "imhaSebep", "imhaYontem",
+        "saklamaSureleri", "periyodikImhaSuresi", "raciTasks", "raciValues", "infoNote", "createdAt", "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/workspaces/{userId}": {
+      "schema": { "$ref": "#/entities/UserWorkspace" },
+      "description": "Stores user and company workspace profile for authenticated users."
+    },
+    "/inventories/{recordId}": {
+      "schema": { "$ref": "#/entities/InventoryFormRecord" },
+      "description": "Stores KVKK 37-point inventory records scoped by ownerUid."
+    }
+  }
+}

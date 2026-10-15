@@ -1,0 +1,171 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pillar 1: Global Safety Net (Default Deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Reusable Hardened Primitives
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isStringBounded(val, maxLen) {
+      return val is string && val.size() <= maxLen;
+    }
+
+    function isValidStringArray(arr, maxItems) {
+      return arr is list && arr.size() <= maxItems && (arr.size() == 0 || (arr[0] is string && arr[0].size() <= 500));
+    }
+
+    // Validation Blueprint: UserWorkspace
+    function isValidUserWorkspace(data) {
+      return data.keys().hasAll(['uid', 'username', 'fullName', 'companyName', 'role', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'username', 'fullName', 'companyName', 'role', 'createdAt', 'updatedAt'])
+        && isValidId(data.uid)
+        && data.uid == request.auth.uid
+        && data.username is string && data.username.size() >= 1 && data.username.size() <= 100
+        && data.fullName is string && data.fullName.size() >= 1 && data.fullName.size() <= 150
+        && data.companyName is string && data.companyName.size() >= 1 && data.companyName.size() <= 250
+        && data.role in ['admin', 'officer', 'auditor']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    // Validation Blueprint: InventoryFormRecord
+    function isValidInventoryFormRecord(data) {
+      return data.keys().hasAll([
+          'id', 'ownerUid', 'ownerUsername', 'companyName', 'title', 'projectCode', 'version', 'status',
+          'unvan', 'adres', 'vergiNo', 'vergiDairesi', 'mersisNo', 'telefon', 'eposta', 'faaliyet', 'departmanlar',
+          'selectedPositions', 'komiteBaskani', 'komiteUyeleri', 'yetkili', 'veriSorumlusu', 'irtibat',
+          'birimSecilenGorevler', 'donanim', 'yazilim', 'guvenlik', 'elektronikOlmayan', 'bulutSistemleri',
+          'idariTedbirler', 'teknikTedbirler', 'veriGuvenligi', 'kisiselVeriKategorileri', 'ozelNitelikliVeriler',
+          'veriToplamaYontemleri', 'saklamaAmaclari', 'hukukiSebepler', 'aliciGruplari', 'imhaSebep', 'imhaYontem',
+          'saklamaSureleri', 'periyodikImhaSuresi', 'raciTasks', 'raciValues', 'infoNote', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'id', 'ownerUid', 'ownerUsername', 'companyName', 'title', 'projectCode', 'version', 'status',
+          'unvan', 'adres', 'vergiNo', 'vergiDairesi', 'mersisNo', 'telefon', 'eposta', 'faaliyet', 'departmanlar',
+          'selectedPositions', 'komiteBaskani', 'komiteUyeleri', 'yetkili', 'veriSorumlusu', 'irtibat',
+          'birimSecilenGorevler', 'donanim', 'yazilim', 'guvenlik', 'elektronikOlmayan', 'bulutSistemleri',
+          'idariTedbirler', 'teknikTedbirler', 'veriGuvenligi', 'kisiselVeriKategorileri', 'ozelNitelikliVeriler',
+          'veriToplamaYontemleri', 'saklamaAmaclari', 'hukukiSebepler', 'aliciGruplari', 'imhaSebep', 'imhaYontem',
+          'saklamaSureleri', 'periyodikImhaSuresi', 'raciTasks', 'raciValues', 'infoNote', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.id)
+        && isValidId(data.ownerUid)
+        && data.ownerUid == request.auth.uid
+        && isStringBounded(data.ownerUsername, 150)
+        && data.companyName is string && data.companyName.size() >= 1 && data.companyName.size() <= 250
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 300
+        && data.projectCode is string && data.projectCode.size() >= 1 && data.projectCode.size() <= 60
+        && data.version is string && data.version.size() >= 1 && data.version.size() <= 30
+        && data.status in ['draft', 'review', 'finalized', 'active']
+        && isStringBounded(data.unvan, 500)
+        && isStringBounded(data.adres, 1000)
+        && isStringBounded(data.vergiNo, 100)
+        && isStringBounded(data.vergiDairesi, 200)
+        && isStringBounded(data.mersisNo, 100)
+        && isStringBounded(data.telefon, 200)
+        && isStringBounded(data.eposta, 300)
+        && isStringBounded(data.faaliyet, 2000)
+        && isStringBounded(data.departmanlar, 2000)
+        && isValidStringArray(data.selectedPositions, 50)
+        && isStringBounded(data.komiteBaskani, 200)
+        && isValidStringArray(data.komiteUyeleri, 50)
+        && isStringBounded(data.yetkili, 300)
+        && isStringBounded(data.veriSorumlusu, 500)
+        && isStringBounded(data.irtibat, 300)
+        && data.birimSecilenGorevler is map && data.birimSecilenGorevler.size() <= 20
+        && isStringBounded(data.donanim, 3000)
+        && isStringBounded(data.yazilim, 3000)
+        && isStringBounded(data.guvenlik, 3000)
+        && isStringBounded(data.elektronikOlmayan, 3000)
+        && isStringBounded(data.bulutSistemleri, 3000)
+        && isStringBounded(data.idariTedbirler, 4000)
+        && isStringBounded(data.teknikTedbirler, 4000)
+        && isStringBounded(data.veriGuvenligi, 4000)
+        && isStringBounded(data.kisiselVeriKategorileri, 3000)
+        && isStringBounded(data.ozelNitelikliVeriler, 3000)
+        && isStringBounded(data.veriToplamaYontemleri, 3000)
+        && isStringBounded(data.saklamaAmaclari, 3000)
+        && isStringBounded(data.hukukiSebepler, 3000)
+        && isStringBounded(data.aliciGruplari, 3000)
+        && isStringBounded(data.imhaSebep, 3000)
+        && isStringBounded(data.imhaYontem, 3000)
+        && isStringBounded(data.saklamaSureleri, 3000)
+        && isStringBounded(data.periyodikImhaSuresi, 500)
+        && isValidStringArray(data.raciTasks, 100)
+        && data.raciValues is map && data.raciValues.size() <= 1000
+        && isStringBounded(data.infoNote, 2000)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    // Collection: /workspaces/{userId}
+    match /workspaces/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isSignedIn()
+        && isValidId(userId)
+        && userId == request.auth.uid
+        && isValidUserWorkspace(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isSignedIn()
+        && isValidId(userId)
+        && userId == request.auth.uid
+        && isValidUserWorkspace(incoming())
+        && incoming().uid == existing().uid
+        && incoming().role == existing().role
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['username', 'fullName', 'companyName', 'updatedAt']);
+      allow delete: if false;
+    }
+
+    // Collection: /inventories/{recordId}
+    match /inventories/{recordId} {
+      allow get: if isSignedIn() && isValidId(recordId) && existing().ownerUid == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.ownerUid == request.auth.uid;
+      allow create: if isSignedIn()
+        && isValidId(recordId)
+        && incoming().id == recordId
+        && isValidInventoryFormRecord(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isSignedIn()
+        && isValidId(recordId)
+        && isValidInventoryFormRecord(incoming())
+        && existing().ownerUid == request.auth.uid
+        && incoming().id == existing().id
+        && incoming().ownerUid == existing().ownerUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'ownerUsername', 'companyName', 'title', 'projectCode', 'version', 'status',
+          'unvan', 'adres', 'vergiNo', 'vergiDairesi', 'mersisNo', 'telefon', 'eposta', 'faaliyet', 'departmanlar',
+          'selectedPositions', 'komiteBaskani', 'komiteUyeleri', 'yetkili', 'veriSorumlusu', 'irtibat',
+          'birimSecilenGorevler', 'donanim', 'yazilim', 'guvenlik', 'elektronikOlmayan', 'bulutSistemleri',
+          'idariTedbirler', 'teknikTedbirler', 'veriGuvenligi', 'kisiselVeriKategorileri', 'ozelNitelikliVeriler',
+          'veriToplamaYontemleri', 'saklamaAmaclari', 'hukukiSebepler', 'aliciGruplari', 'imhaSebep', 'imhaYontem',
+          'saklamaSureleri', 'periyodikImhaSuresi', 'raciTasks', 'raciValues', 'infoNote', 'updatedAt'
+        ]);
+      allow delete: if isSignedIn() && isValidId(recordId) && existing().ownerUid == request.auth.uid;
+    }
+  }
+}

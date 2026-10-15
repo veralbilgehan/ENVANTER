@@ -1,0 +1,6 @@
+{
+  "name": "Görev Tanımı ve Envanter Veritabanı",
+  "description": "KVKK uyumlu görev tanımları, şemsiye organizasyon şeması, RACI matrisi ve veri saklama-imha envanteri yönetim ve veritabanı sistemi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
